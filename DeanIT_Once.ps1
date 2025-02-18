@@ -1,25 +1,3 @@
-# admin check
-
-param([switch]$Elevated)
-function Check-Admin {
-$currentUser = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent())
-$currentUser.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
-}
-if ((Check-Admin) -eq $false)  {
-if ($elevated)
-{
-# could not elevate, quit
-}
- 
-else {
- 
-Start-Process powershell.exe -Verb RunAs -ArgumentList ('-noprofile -noexit -file "{0}" -elevated' -f ($myinvocation.MyCommand.Definition))
-}
-exit
-}
-
-# admin check end
-
 # go to usb
 set-location "X:\"
 
@@ -27,17 +5,15 @@ set-location "X:\"
 mkdir "C:\ProgramData\RUDI"
 Copy-Item deploy -Destination "C:\ProgramData\RUDI" -recurse
 
-$TargetFile = "powershell.exe -file C:\ProgramData\RUDI\deploy\Scripts\DeanIT_Install.ps1"
-$ShortcutFile = "C:\Users\deanit\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\DeanIT_Install.lnk"
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $TargetFile
-$Shortcut.Save()
+Write-Host -ForegroundColor Green "Starting OSDCloud ZTI"
+Start-Sleep -Seconds 5
 
-#$bytes = [System.IO.File]::ReadAllBytes($ShortcutFile)
-#$bytes[0x15] = $bytes[0x15] -bor 0x20
-#[System.IO.File]::WriteAllBytes($ShortcutFile, $bytes)
+Start-OSDCloud -OSVersion 'Windows 10' -OSBuild 22H2 -OSEdition Pro -OSLanguage en-us -OSLicense Retail -ZTI
 
-Set-Location "C:\ProgramData\RUDI\deploy"
+#Restart from WinPE
 
-.\Scripts\DeanIT_Name.ps1
+Write-Host -ForegroundColor Green “Restarting in 10 seconds!”
+
+Start-Sleep -Seconds 10
+
+wpeutil reboot
