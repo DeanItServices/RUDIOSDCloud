@@ -16,5 +16,4 @@ Write-Host -ForegroundColor Green “Restarting in 10 seconds!”
 
 Start-Sleep -Seconds 10
 
-pause
-#wpeutil reboot
+wpeutil reboot
