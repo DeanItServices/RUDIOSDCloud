@@ -8,7 +8,7 @@ set-location "X:\"
 
 # copies the deploy folder to the SPAdmin desktop
 mkdir "C:\ProgramData\RUDI"
-Copy-Item deploy -Destination "C:\ProgramData\RUDI" -recurse
+Copy-Item "X:\OSDCloud\Config\Scripts\deploy" -Destination "C:\ProgramData\RUDI" -recurse
 
 #Restart from WinPE
 
