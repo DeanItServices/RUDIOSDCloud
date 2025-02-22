@@ -4,7 +4,7 @@ function Save-Config {
         [hashtable]$config
     )
     try {
-        $config | ConvertTo-Json | Set-Content -Path $configFilePath
+        $config | ConvertTo-Json -Depth 5 | Set-Content -Path $configFilePath
         Write-Host -ForegroundColor Green "Progress saved to $configFilePath"
     } catch {
         Write-Host -ForegroundColor Red "Error saving progress to ${configFilePath}: ${_}"
