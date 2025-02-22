@@ -9,7 +9,7 @@ set-location "D:\"
 # copies the deploy folder to the SPAdmin desktop
 mkdir "C:\ProgramData\RUDI"
 Copy-Item ".\deploy" -Destination "C:\ProgramData\RUDI" -recurse
-#Copy-Item ".\deploy\Scripts\FirstLogon.ps1" -Destination "C:\Windows\Setup\Scripts\FirstLogon.ps1"
+Copy-Item ".\deploy\Scripts\FirstLogon.ps1" -Destination "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp"
 
 #Restart from WinPE
 
