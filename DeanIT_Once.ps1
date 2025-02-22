@@ -1,3 +1,16 @@
+$configFilePath = "C:\ProgramData\RUDI\deploy\Config\config.json"
+function Save-Config {
+    param (
+        [hashtable]$config
+    )
+    try {
+        $config | ConvertTo-Json | Set-Content -Path $configFilePath
+        Write-Host -ForegroundColor Green "Progress saved to $configFilePath"
+    } catch {
+        Write-Host -ForegroundColor Red "Error saving progress to ${configFilePath}: ${_}"
+    }
+}
+
 Write-Host -ForegroundColor Green "Starting OSDCloud ZTI"
 Start-Sleep -Seconds 5
 
@@ -10,6 +23,8 @@ set-location "D:\"
 mkdir "C:\ProgramData\RUDI"
 Copy-Item ".\deploy" -Destination "C:\ProgramData\RUDI" -recurse
 #Copy-Item ".\deploy\Scripts\FirstLogon.ps1" -Destination "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp"
+
+#Creates a new shortcut to the TestScript.ps1 and places shortcut in the all users startup folder
 $TargetFile = "powershell.exe"
 $ShortcutFile = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\TestScript.lnk"
 $Shortcutargs = "-ExecutionPolicy RemoteSigned -file C:\ProgramData\RUDI\deploy\Scripts\TestScript.ps1"
@@ -19,10 +34,27 @@ $Shortcut.TargetPath = $TargetFile
 $Shortcut.Arguments = $Shortcutargs
 $Shortcut.Save()
 
+#Disable UAC by importing the reg hive from the newly imaged PC
 Write-Host -ForegroundColor Green "Disabling UAC..."
 reg load HKLM\TempSoftware "C:\Windows\System32\config\software"
 Set-ItemProperty -Path HKLM:\TempSoftware\Microsoft\Windows\CurrentVersion\Policies\System -Name EnableLUA -Value 0
 reg unload HKLM\TempSoftware
+
+#Import Config File
+Write-Host -ForegroundColor Green "Importing Config File to writeback PC Name"
+if (-not (Test-Path $configFilePath)) {
+    Write-Host -ForegroundColor Red "Configuration file not found. PC Rename will fail. Run wpeutil reboot to boot back into Windows. Exiting script. "
+    exit 1
+}
+
+# Parse the configuration file
+#TO DO: import config file then convert to HashTable.
+$config = Get-Content $configFilePath | ConvertFrom-Json
+
+#Grab PC Name from user input
+$config.PCName = Read-Host -prompt 'Please enter the PC Name'
+#Save PC Name back to the config file
+Save-Config -config $config
 
 #Restart from WinPE
 
