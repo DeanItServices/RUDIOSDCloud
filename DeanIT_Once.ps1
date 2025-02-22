@@ -11,8 +11,8 @@ mkdir "C:\ProgramData\RUDI"
 Copy-Item ".\deploy" -Destination "C:\ProgramData\RUDI" -recurse
 #Copy-Item ".\deploy\Scripts\FirstLogon.ps1" -Destination "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp"
 $TargetFile = "powershell.exe"
-$ShortcutFile = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\DeanIT_Install.lnk"
-$Shortcutargs = "-file C:\ProgramData\RUDI\deploy\Scripts\DeanIT_Install.ps1"
+$ShortcutFile = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\TestScript.lnk"
+$Shortcutargs = "-ExecutionPolicy RemoteSigned -file C:\ProgramData\RUDI\deploy\Scripts\TestScript.ps1"
 $WScriptShell = New-Object -ComObject WScript.Shell
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $TargetFile
