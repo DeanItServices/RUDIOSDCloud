@@ -71,8 +71,8 @@ Save-Config -config $config
 
 #Restart from WinPE
 
-Write-Host -ForegroundColor Green “Restarting in 10 seconds!”
+Write-Host -ForegroundColor Green “Restarting in 60 seconds!”
 
-Start-Sleep -Seconds 10
+Start-Sleep -Seconds 60
 
 wpeutil reboot
