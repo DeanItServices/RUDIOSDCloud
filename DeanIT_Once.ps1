@@ -19,6 +19,10 @@ $Shortcut.TargetPath = $TargetFile
 $Shortcut.Arguments = $Shortcutargs
 $Shortcut.Save()
 
+Write-Host -ForegroundColor Green "Disabling UAC..."
+reg load HKLM\TempSoftware "C:\Windows\System32\config\software"
+Set-ItemProperty -Path HKLM:\TempSoftware\Microsoft\Windows\CurrentVersion\Policies\System -Name EnableLUA -Value 0
+reg unload HKLM\TempSoftware
 
 #Restart from WinPE
 
