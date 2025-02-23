@@ -1,4 +1,4 @@
-$configFilePath = "D:\deploy\Config\config.json"
+$configFilePath = "C:\ProgramData\RUDI\deploy\Config\config.json"
 function Save-Config {
     param (
         [hashtable]$config
@@ -26,6 +26,19 @@ function ConvertTo-Hashtable {
     return $hashtable
 }
 
+Write-Host -ForegroundColor Green "Starting OSDCloud ZTI"
+Start-Sleep -Seconds 5
+
+Start-OSDCloud -OSVersion 'Windows 11' -OSBuild 24H2 -OSEdition Pro -OSLanguage en-us -OSLicense Retail -ZTI
+
+# go to usb
+set-location "D:\"
+
+# copies the deploy folder to the SPAdmin desktop
+mkdir "C:\ProgramData\RUDI"
+Copy-Item ".\deploy" -Destination "C:\ProgramData\RUDI" -recurse
+#Copy-Item ".\deploy\Scripts\FirstLogon.ps1" -Destination "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp"
+
 #Import Config File
 Write-Host -ForegroundColor Green "Importing Config File to writeback PC Name"
 if (-not (Test-Path $configFilePath)) {
@@ -43,19 +56,6 @@ if (-not (Test-Path $configFilePath)) {
 $config.PCName = Read-Host -prompt 'Please enter the PC Name'
 #Save config edits back to the config file
 Save-Config -config $config
-
-Write-Host -ForegroundColor Green "Starting OSDCloud ZTI"
-Start-Sleep -Seconds 5
-
-Start-OSDCloud -OSVersion 'Windows 11' -OSBuild 24H2 -OSEdition Pro -OSLanguage en-us -OSLicense Retail -ZTI
-
-# go to usb
-set-location "D:\"
-
-# copies the deploy folder to the SPAdmin desktop
-mkdir "C:\ProgramData\RUDI"
-Copy-Item ".\deploy" -Destination "C:\ProgramData\RUDI" -recurse
-#Copy-Item ".\deploy\Scripts\FirstLogon.ps1" -Destination "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp"
 
 #Creates a new shortcut to the TestScript.ps1 and places shortcut in the all users startup folder
 $TargetFile = "powershell.exe"
