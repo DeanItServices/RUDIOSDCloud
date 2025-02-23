@@ -4,8 +4,12 @@ function Save-Config {
         [hashtable]$config
     )
     try {
+        Write-Host -ForegroundColor Green "Disable Read-Only on config file"
+        (Get-Item $configFilePath).IsReadOnly = $false
         $config | ConvertTo-Json -Depth 5 | Set-Content -Path $configFilePath
-        Write-Host -ForegroundColor Green "Progress saved to $configFilePath"
+        Write-Host -ForegroundColor Green "Config saved to $configFilePath"
+        Write-Host -ForegroundColor Green "Set config file to Read-Only"
+        (Get-Item $configFilePath).IsReadOnly = $true
     } catch {
         Write-Host -ForegroundColor Red "Error saving progress to ${configFilePath}: ${_}"
     }
