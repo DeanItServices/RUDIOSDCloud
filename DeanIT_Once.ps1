@@ -1,4 +1,4 @@
-$configFilePath = "C:\ProgramData\RUDI\deploy\Config\config.json"
+$configFilePath = "D:\deploy\Config\config.json"
 function Save-Config {
     param (
         [hashtable]$config
@@ -21,6 +21,24 @@ function ConvertTo-Hashtable {
     }
     return $hashtable
 }
+
+#Import Config File
+Write-Host -ForegroundColor Green "Importing Config File to writeback PC Name"
+if (-not (Test-Path $configFilePath)) {
+    Write-Host -ForegroundColor Red "Configuration file not found. PC Rename will fail. Run wpeutil reboot to boot back into Windows. Exiting script. "
+    exit 1
+} else {
+    #Import config file then convert to HashTable. That way it can be saved back to the JSON file later.
+    $config = Get-Content $configFilePath | ConvertFrom-Json
+    Write-Host -ForegroundColor Green "Config imported from $configFilePath"
+    #Convert PSCustomObject to Hashtable
+    $config = ConvertTo-HashTable -object $config
+}
+
+#Grab PC Name from user input
+$config.PCName = Read-Host -prompt 'Please enter the PC Name'
+#Save config edits back to the config file
+Save-Config -config $config
 
 Write-Host -ForegroundColor Green "Starting OSDCloud ZTI"
 Start-Sleep -Seconds 5
@@ -50,24 +68,6 @@ Write-Host -ForegroundColor Green "Disabling UAC..."
 reg load HKLM\TempSoftware "C:\Windows\System32\config\software"
 Set-ItemProperty -Path HKLM:\TempSoftware\Microsoft\Windows\CurrentVersion\Policies\System -Name EnableLUA -Value 0
 reg unload HKLM\TempSoftware
-
-#Import Config File
-Write-Host -ForegroundColor Green "Importing Config File to writeback PC Name"
-if (-not (Test-Path $configFilePath)) {
-    Write-Host -ForegroundColor Red "Configuration file not found. PC Rename will fail. Run wpeutil reboot to boot back into Windows. Exiting script. "
-    exit 1
-} else {
-    #Import config file then convert to HashTable. That way it can be saved back to the JSON file later.
-    $config = Get-Content $configFilePath | ConvertFrom-Json
-    Write-Host -ForegroundColor Green "Config imported from $configFilePath"
-    #Convert PSCustomObject to Hashtable
-    $config = ConvertTo-HashTable -object $config
-}
-
-#Grab PC Name from user input
-$config.PCName = Read-Host -prompt 'Please enter the PC Name'
-#Save config edits back to the config file
-Save-Config -config $config
 
 #Restart from WinPE
 
